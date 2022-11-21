@@ -16,10 +16,10 @@ void GenerateSnake();
 void DeleteSnake();
 
 void PrintField(bool** field, HANDLE consoleHandle);
-void MoveLeft(bool** field);
-void MoveRighth(bool** field);
-void MoveDown(bool** field);
-void MoveUp(bool** field);
+void MoveLeft(int* direction);
+void MoveRight(int* direction);
+void MoveDown(int* direction);
+void MoveUp(int* direction);
 void MoveForvard(bool** field, int direction);
 int MeetBorder(bool** field);
 int EatFood(bool** field);

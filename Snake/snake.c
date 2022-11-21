@@ -13,7 +13,7 @@ int main()
 	int score = 0;
 	bool in_game = true;
 	bool pause = false;
-	int direction = DIRECTION_RIGHT;
+	Direction direction = DIRECTION_RIGHT;
 
 	bool** field = InitField();
 
@@ -36,10 +36,10 @@ int main()
 		char c = (_kbhit()) ? _getch() : -1;
 		diff = clock() - start;
 
-		if      (c == KEY_MOVE_LEFT)  MoveLeft(field);
-		else if (c == KEY_MOVE_RIGHT) MoveRighth(field);
-		else if (c == KEY_MOVE_DOWN)  MoveDown(field);
-		else if (c == KEY_MOVE_UP)    MoveUp(field);
+		if      (c == KEY_MOVE_LEFT)  MoveLeft(&direction);
+		else if (c == KEY_MOVE_RIGHT) MoveRight(&direction);
+		else if (c == KEY_MOVE_DOWN)  MoveDown(&direction);
+		else if (c == KEY_MOVE_UP)    MoveUp(&direction);
 		else if (c == KEY_QUIT)       in_game = false;
 		else if (c == KEY_PAUSE)      pause = true;
 		else
@@ -150,27 +150,28 @@ void PrintField(bool** field, HANDLE consoleHandle)
 	}
 }
 
-void MoveLeft(bool** field)
+void MoveLeft(int* direction)
 {
-
+	if (*direction != DIRECTION_RIGHT) *direction = DIRECTION_LEFT;
 }
 
-void MoveRighth(bool** field)
+void MoveRight(int* direction)
 {
-
+	if (*direction != DIRECTION_LEFT) *direction = DIRECTION_RIGHT;
 }
 
-void MoveDown(bool** field)
+void MoveDown(int* direction)
 {
-
+	if (*direction != DIRECTION_UP) *direction = DIRECTION_DOWN;
 }
 
-void MoveUp(bool** field)
+void MoveUp(int* direction)
 {
 
+	if (*direction != DIRECTION_DOWN) *direction = DIRECTION_UP;
 }
 
-void MoveForvard(bool** field, int direction)
+void MoveForvard(bool** field, Direction direction)
 {
 	for (int i = 0; i < snake.size - 1; ++i)
 	{
@@ -178,21 +179,21 @@ void MoveForvard(bool** field, int direction)
 		snake.coords[i][1] = snake.coords[i + 1][1];
 	}
 
-	if (direction == 0)
+	if (direction == DIRECTION_RIGHT)
 	{
 		snake.coords[snake.size - 1][0] += 1;
 	}
-	if (direction == 1)
+	if (direction == DIRECTION_LEFT)
 	{
 		snake.coords[snake.size - 1][0] -= 1;
 	}
-	if (direction == 2)
-	{
-		snake.coords[snake.size - 1][1] += 1;
-	}
-	if (direction == 3)
+	if (direction == DIRECTION_UP)
 	{
 		snake.coords[snake.size - 1][1] -= 1;
+	}
+	if (direction == DIRECTION_DOWN)
+	{
+		snake.coords[snake.size - 1][1] += 1;
 	}
 
 }
