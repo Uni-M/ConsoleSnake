@@ -20,7 +20,7 @@ void MoveLeft(int* direction);
 void MoveRight(int* direction);
 void MoveDown(int* direction);
 void MoveUp(int* direction);
-void MoveForvard(bool** field, int direction);
+void MoveForvard(bool** field, Direction direction);
 int MeetBorder(bool** field);
 int EatFood(bool** field);
 void GrowUp();
