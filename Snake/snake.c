@@ -44,14 +44,14 @@ int main()
 		else if (c == KEY_PAUSE)      pause = true;
 		else
 		{
-			if (diff > 1000)
+			if (diff > 500)
 			{
 				MoveForvard(field, direction);
 				start = clock();
 			}
 		}
 
-		if (MeetBorder(field) == 0)
+		if (MeetBorder(direction) == 1)
 		{
 			in_game = false;
 			PrintGameOver();
@@ -59,14 +59,14 @@ int main()
 			continue;
 		}
 
-		if (EatFood(field) == 0)
+		if (EatFood(direction) == 1)
 		{
 			score += 1;
-			GenerateFood();
 			GrowUp();
+			GenerateFood();
 		}
 
-		Sleep(500);
+		Sleep(100);
 		setcur(0, 0);
 
 	}
@@ -94,7 +94,7 @@ void GenerateFood()
 
 void GenerateSnake()
 {
-	int** a = (int**)malloc(DEFAULT_SNAKE_SIZE + sizeof(int*));
+	int** a = (int**)malloc(DEFAULT_SNAKE_SIZE * sizeof(int*));
 	for (int i = 0; i < DEFAULT_SNAKE_SIZE; ++i)
 	{
 		a[i] = (int*)malloc(2 * sizeof(int));
@@ -179,37 +179,78 @@ void MoveForvard(bool** field, Direction direction)
 		snake.coords[i][1] = snake.coords[i + 1][1];
 	}
 
-	if (direction == DIRECTION_RIGHT)
-	{
-		snake.coords[snake.size - 1][0] += 1;
-	}
-	if (direction == DIRECTION_LEFT)
-	{
-		snake.coords[snake.size - 1][0] -= 1;
-	}
-	if (direction == DIRECTION_UP)
-	{
-		snake.coords[snake.size - 1][1] -= 1;
-	}
-	if (direction == DIRECTION_DOWN)
-	{
-		snake.coords[snake.size - 1][1] += 1;
-	}
+	if (direction == DIRECTION_RIGHT)  snake.coords[snake.size - 1][0] += 1;
+	if (direction == DIRECTION_LEFT)   snake.coords[snake.size - 1][0] -= 1;
+	if (direction == DIRECTION_UP)     snake.coords[snake.size - 1][1] -= 1;
+	if (direction == DIRECTION_DOWN)   snake.coords[snake.size - 1][1] += 1;
 
 }
 
-int MeetBorder(bool** field)
+int MeetBorder(Direction direction)
 {
 
+	if (direction == DIRECTION_RIGHT &&
+		snake.coords[snake.size - 1][0] == FIELD_SIZE)
+		return 1;
+	else if (direction == DIRECTION_LEFT &&
+		snake.coords[snake.size - 1][0] < 0)
+		return 1;
+	else if (direction == DIRECTION_UP &&
+		snake.coords[snake.size - 1][1] < 0)
+		return 1;
+	else if (direction == DIRECTION_DOWN &&
+		snake.coords[snake.size - 1][1] == FIELD_SIZE)
+		return 1;
+	
+
+	for (int i = snake.size-1; i > 1; --i) // TODO need to be fixed
+	{
+		if (i > 4 && snake.coords[0][0] == snake.coords[i][0] && snake.coords[0][1] == snake.coords[i][1])
+		{
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
-int EatFood(bool** field)
+int EatFood(Direction direction)
 {
-
+	if (direction == DIRECTION_RIGHT &&
+		snake.coords[snake.size - 1][0] + 1 == food.x &&
+		snake.coords[snake.size - 1][1] == food.y)
+		return 1;
+	else if (direction == DIRECTION_LEFT &&
+		snake.coords[snake.size - 1][0] - 1 == food.x &&
+		snake.coords[snake.size - 1][1] == food.y)
+		return 1;
+	else if (direction == DIRECTION_UP &&
+		snake.coords[snake.size - 1][0] == food.x &&
+		snake.coords[snake.size - 1][1] - 1 == food.y)
+		return 1;
+	else if (direction == DIRECTION_DOWN &&
+		snake.coords[snake.size - 1][0] == food.x &&
+		snake.coords[snake.size - 1][1] + 1 == food.y)
+		return 1;
+	return 0;
 }
 
 void GrowUp()
 {
+	size_t new_size = snake.size + 1;
+
+	int** a = (int**)realloc(snake.coords, new_size * sizeof(int*));
+	for (int i = 0; i < snake.size; ++i)
+	{
+		a[i] = (int*)realloc(snake.coords[i], 2 * sizeof(int));
+	}
+	a[snake.size] = (int*)malloc(2 * sizeof(int));
+
+	a[snake.size][0] = food.x;
+	a[snake.size][1] = food.y;
+
+	snake.coords = a;
+	snake.size = new_size;
 
 }
 
@@ -224,7 +265,12 @@ void DeleteSnake()
 
 void PrintGameOver()
 {
-
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(consoleHandle, 12);
+	printf("=======================================\n");
+	printf("                GAME OVER              \n");
+	printf("=======================================\n");
+	SetConsoleTextAttribute(consoleHandle, 14);
 }
 
 hidecursor()
