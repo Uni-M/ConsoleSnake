@@ -202,10 +202,9 @@ int MeetBorder(Direction direction)
 		snake.coords[snake.size - 1][1] == FIELD_SIZE)
 		return 1;
 	
-
-	for (int i = snake.size-1; i > 1; --i) // TODO need to be fixed
+	for (int i = snake.size-1; i > 0; --i)
 	{
-		if (i > 4 && snake.coords[0][0] == snake.coords[i][0] && snake.coords[0][1] == snake.coords[i][1])
+		if (snake.size > 4 && snake.coords[0][0] == snake.coords[i][0] && snake.coords[0][1] == snake.coords[i][1])
 		{
 			return 1;
 		}
